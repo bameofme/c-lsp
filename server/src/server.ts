@@ -263,7 +263,7 @@ documents.onDidSave(change => {
 //   let tmpWorkspaceFolders = workspaceFolders.slice(3);
   let filePath = fileUri.slice(workspaceFolders.length + 1);
 	const command = `gtags --single-update ${filePath}`;
-	exec(command, (error, stdout, stderr) => {
+	const process = exec(command, (error, stdout, stderr) => {
 		if (error) {
 			connection.console.error(`Error: ${error.message}`);
 			return;
@@ -274,6 +274,12 @@ documents.onDidSave(change => {
 		}
 		return;
 		console.log(stdout);
+	});
+	const timeout = setTimeout(() => {
+		process.kill();
+	}, 10000);
+	process.on('exit', () => {
+		clearTimeout(timeout);
 	});
 });
 
