@@ -276,7 +276,7 @@ documents.onDidSave(change => {
 		console.log(stdout);
 	});
 	const timeout = setTimeout(() => {
-		process.kill();
+		exec("pkill gtags");
 	}, 10000);
 	process.on('exit', () => {
 		clearTimeout(timeout);
@@ -797,7 +797,7 @@ connection.onReferences(
 connection.onDidSaveTextDocument((params: DidSaveTextDocumentParams) => {
 	const filePath = params.textDocument.uri;
 	const command = `gtags --single-update ${filePath}`;
-	exec(command, (error, stdout, stderr) => {
+	const process = exec(command, (error, stdout, stderr) => {
 		if (error) {
 			connection.console.error(`Error: ${error.message}`);
 			return;
@@ -808,6 +808,12 @@ connection.onDidSaveTextDocument((params: DidSaveTextDocumentParams) => {
 		}
 		return;
 		console.log(stdout);
+	});
+	const timeout = setTimeout(() => {
+		exec("pkill gtags");
+	}, 10000);
+	process.on('exit', () => {
+		clearTimeout(timeout);
 	});
 });
 
